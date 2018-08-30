@@ -4,172 +4,161 @@ import java.util.Comparator;
 public class LinkedListTester {
   static Scanner stdIn = new Scanner(System.in);
 
-  //--- データ（会員番号＋氏名） ---//
   static class Data {
-    static final int NO   = 1;		// 番号を読み込むか？
-    static final int NAME = 2;		// 氏名を読み込むか？
+    static final int NO = 1;
+    static final int NAME = 2;
 
-    private Integer no;				// 会員番号
-    private String  name;			// 氏名
+    private Integer no;
+    private String name;
 
-    //--- 文字列表現を返す ---//
     public String toString() {
-      return "(" + no + ") " + name;
+      return "(" + no + ")" + name;
     }
 
-    //--- データの読込み ---//
     void scanData(String guide, int sw) {
-      System.out.println(guide + "するデータを入力してください。");
+      System.out.println(guide + "するデータを入力してください");
 
       if ((sw & NO) == NO) {
-        System.out.print("番号：");
+        System.out.print("番号:");
         no = stdIn.nextInt();
       }
       if ((sw & NAME) == NAME) {
-        System.out.print("名前：");
+        System.out.print("名前:");
         name = stdIn.next();
       }
     }
 
-    //--- 会員番号による順序付けを行うコンパレータ  ---//
-    public static final Comparator<Data> NO_ORDER =
-      new NoOrderComparator();
-
+    public static final Comparator<Data> NO_ORDER = new NoOrderComparator();
     private static class NoOrderComparator implements Comparator<Data> {
       public int compare(Data d1, Data d2) {
         return (d1.no > d2.no) ? 1 : (d1.no < d2.no) ? -1 : 0;
       }
     }
 
-    //--- 氏名による順序付けを行うコンパレータ  ---//
-    public static final Comparator<Data> NAME_ORDER =
-      new NameOrderComparator();
-
+    public static final Comparator<Data> NAME_ORDER = new NameOrderComparator();
     private static class NameOrderComparator implements Comparator<Data> {
       public int compare(Data d1, Data d2) {
         return d1.name.compareTo(d2.name);
       }
     }
   }
-
-  //--- メニュー列挙型 ---//
   enum Menu {
-    ADD_FIRST(  "先頭にノードを挿入"),
-    ADD_LAST(   "末尾にノードを挿入"),
-    RMV_FIRST(  "先頭ノードを削除"),
-    RMV_LAST(   "末尾ノードを削除"),
-    RMV_CRNT(   "着目ノードを削除"),
-    CLEAR(      "全ノードを削除"),
-    SEARCH_NO(  "番号で探索"),
+    ADD_FIRST("先頭にノードを挿入"),
+    ADD_LAST("末尾にノードを挿入"),
+    RMV_FIRST("先頭ノードを削除"),
+    RMV_LAST("末尾ノードを削除"),
+    RMV_CRNT("着目ノードを削除"),
+    CLEAR("全ノードを削除"),
+    SEARCH_NO("番号で探索"),
     SEARCH_NAME("氏名で探索"),
-    NEXT(       "着目ノードを進める"),
-    PRINT_CRNT( "着目ノードを表示"),
-    DUMP(       "全ノードを表示"),
-    TERMINATE(  "終了");
+    NEXT("着目ノードを進める"),
+    PRINT_CRNT("着目ノードを表示"),
+    DUMP("全ノードを表示"),
+    PURGE("先頭以外削除"),
+    TERMINATE("終了");
 
-    private final String message;				// 表示用文字列
+    private final String message;
 
-    static Menu MenuAt(int idx) {				// 序数がidxである列挙を返す
+    static Menu MenuAt(int idx) {
       for (Menu m : Menu.values())
         if (m.ordinal() == idx)
           return m;
       return null;
     }
-
-    Menu(String string) {						// コンストラクタ
+    Menu(String string) {
       message = string;
     }
-
-    String getMessage() {						// 表示用文字列を返す
+    String getMessage() {
       return message;
     }
   }
 
-  //--- メニュー選択 ---//
   static Menu SelectMenu() {
     int key;
     do {
       for (Menu m : Menu.values()) {
-        System.out.printf("(%d) %s  ", m.ordinal(), m.getMessage());
+        System.out.printf("(%d) %s ", m.ordinal(), m.getMessage());
         if ((m.ordinal() % 3) == 2 &&
             m.ordinal() != Menu.TERMINATE.ordinal())
           System.out.println();
       }
-      System.out.print("：");
+      System.out.print(":");
       key = stdIn.nextInt();
-    } while (key < Menu.ADD_FIRST.ordinal() ||
+    } while (key  < Menu.ADD_FIRST.ordinal() ||
         key > Menu.TERMINATE.ordinal());
     return Menu.MenuAt(key);
   }
 
   public static void main(String[] args) {
-    Menu menu;						// メニュー
-    Data data;						// 追加用データ参照
-    Data ptr;						// 探索用データ参照
-    Data temp = new Data();		// 読込み用データ
+    Menu menu;
+    Data data;
+    Data ptr;
+    Data temp = new Data();
 
-    LinkedList<Data> list = new LinkedList<Data>();		// リストを生成
+    LinkedList<Data> list = new LinkedList<Data>();
 
     do {
       switch (menu = SelectMenu()) {
-
-        case ADD_FIRST :							// 先頭にノードを挿入
+        case ADD_FIRST :
           data = new Data();
-          data.scanData("先頭に挿入", Data.NO | Data.NAME);
+          data.scanData("先頭に挿入",Data.NO | Data.NAME);
           list.addFirst(data);
           break;
 
-        case ADD_LAST :							// 末尾にノードを挿入
+        case ADD_LAST :
           data = new Data();
           data.scanData("末尾に挿入", Data.NO | Data.NAME);
           list.addLast(data);
           break;
 
-        case RMV_FIRST :							// 先頭ノードを削除
+        case RMV_FIRST :
           list.removeFirst();
           break;
 
-        case RMV_LAST :							// 末尾ノードを削除
+        case RMV_LAST :
           list.removeLast();
           break;
 
-        case RMV_CRNT :							// 着目ノードを削除
+        case RMV_CRNT :
           list.removeCurrentNode();
           break;
 
-        case SEARCH_NO :							// 会員番号で探索
-          temp.scanData("探索", Data.NO);
+        case SEARCH_NO :
+          temp.scanData("探索",Data.NO);
           ptr = list.search(temp, Data.NO_ORDER);
           if (ptr == null)
-            System.out.println("その番号のデータはありません。");
+            System.out.println("その番号のデータはありません");
           else
-            System.out.println("探索成功：" + ptr);
+            System.out.println("探索成功:" + ptr);
           break;
 
-        case SEARCH_NAME :						// 氏名で探索
-          temp.scanData("探索", Data.NAME);
+        case SEARCH_NAME :
+          temp.scanData("探索",Data.NAME);
           ptr = list.search(temp, Data.NAME_ORDER);
           if (ptr == null)
-            System.out.println("その名前のデータはありません。");
+            System.out.println("その名前のデータはありません");
           else
-            System.out.println("探索成功：" + ptr);
+            System.out.println("探索成功:" + ptr);
           break;
 
-        case NEXT :								// 着目ノードを後方に進める
+        case NEXT :
           list.next();
           break;
 
-        case PRINT_CRNT :						// 着目ノードのデータを表示
+        case PRINT_CRNT :
           list.printCurrentNode();
           break;
 
-        case DUMP :								// 全ノードをリスト順に表示
+        case DUMP :
           list.dump();
           break;
 
-        case CLEAR :								// 全ノードを削除
+        case CLEAR :
           list.clear();
           break;
+
+        case PURGE :
+          list.purge(Data.NO_ORDER);
       }
     } while (menu != Menu.TERMINATE);
   }

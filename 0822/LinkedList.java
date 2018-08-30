@@ -132,6 +132,7 @@ public class LinkedList<E> {
       ptr = ptr.next;
     }
   }
+ //--- コンパレータcによって互いに等しいとみなせるノードをすべて削除 ---//
   public void purge(Comparator<? super E> c) {
       Node<E> ptr = head;
 
